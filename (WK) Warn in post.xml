@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="(WK) Warn in post" version_long="10003" version_human="1.0.3" author="Weak." website="https://steamcommunity.com/id/WeakLove/" update_check=""><hooks><hook type="S" class="\IPS\Theme\class_forums_front_topics" filename="wkWarninPost"><![CDATA[//<?php
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	exit;
+}
+
+class hook23 extends _HOOK_CLASS_
+{
+
+/* !Hook Data - DO NOT REMOVE */
+public static function hookData() {
+ return array_merge_recursive( array (
+  'post' => 
+  array (
+    0 => 
+    array (
+      'selector' => 'div[data-controller=\'core.front.core.comment\'] > div.cPost_contentWrap.ipsPad > div.ipsItemControls > ul.ipsComment_controls.ipsClearfix.ipsItemControls_left[data-role=\'commentControls\'] > li.ipsHide[data-role=\'commentLoading\']',
+      'type' => 'add_inside_end',
+      'content' => '{{if \IPS\Member::loggedIn()->member_id}}
+	{template="wkWarninPost" group="plugins" location="global" app="core" params="$comment, $comment->author()"}
+{{endif}}',
+    ),
+    1 => 
+    array (
+      'selector' => 'div[data-controller=\'core.front.core.comment\'].ipsComment_content.ipsType_medium > div.cPost_contentWrap > div.ipsItemControls > ul.ipsComment_controls.ipsClearfix.ipsItemControls_left[data-role=\'commentControls\'] > li.ipsHide[data-role=\'commentLoading\']',
+      'type' => 'add_inside_end',
+      'content' => '{{if \IPS\Member::loggedIn()->member_id}}
+	{template="wkWarninPost" group="plugins" location="global" app="core" params="$comment, $comment->author()"}
+{{endif}}',
+    ),
+  ),
+), parent::hookData() );
+}
+/* End Hook Data */
+	public function post( $item, $comment, $editorName, $app, $type, $class='' )
+	{
+		try
+		{
+			try
+			{
+				$comment->warn_post = \IPS\Http\Url::internal( "app=core&module=system&controller=warnings&do=warn&id={$comment->author()->member_id}", 'front', 'warn_add', [ $comment->author()->members_seo_name ] );
+				$comment->warn_post = $comment->warn_post->setQueryString( 'ref', base64_encode( json_encode( [ 'app' => 'forums', 'module' => 'forums-comment' , 'id_1' => $comment->topic_id, 'id_2' => $comment->pid ] ) ) );
+			}
+			catch(\Exception $exception) {}
+				
+			return parent::post( $item, $comment, $editorName, $app, $type, $class='' );
+		}
+		catch ( \RuntimeException $e )
+		{
+			if ( method_exists( get_parent_class(), __FUNCTION__ ) )
+			{
+				return \call_user_func_array( 'parent::' . __FUNCTION__, \func_get_args() );
+			}
+			else
+			{
+				throw $e;
+			}
+		}
+	}
+}
+]]></hook></hooks><tasks/><widgets/><htmlFiles><html filename="wkWarninPost.phtml">PGlwczp0ZW1wbGF0ZSBwYXJhbWV0ZXJzPSIkY29tbWVudCwgJG1lbWJlciIgLz4Ke3tpZiBtZW1iZXIuY2FuV2FybiggJG1lbWJlciApfX0KPGxpIGRhdGEtaXBzVG9vbHRpcCB0aXRsZT0ne2xhbmc9Indhcm5fdXNlcl90aXRsZSJ9JyBjbGFzcz0naXBzVHlwZV9saWdodCc+ICAKICAgIDxhIGhyZWY9J3skY29tbWVudC0+d2Fybl9wb3N0fScgZGF0YS1pcHNEaWFsb2cgZGF0YS1pcHNEaWFsb2ctdGl0bGU9J3tsYW5nPSJ3YXJuX3VzZXIifSc+CiAgICAgICAgPGkgY2xhc3M9J2ZhIGZhLWV4Y2xhbWF0aW9uLXRyaWFuZ2xlJz48L2k+IHtsYW5nPSJ3YXJuX3VzZXIifQogICAgPC9hPgo8L2xpPgp7e2VuZGlmfX0=</html></htmlFiles><cssFiles/><jsFiles/><resourcesFiles/><lang><word key="wk_warn_show" js="0">Uprawnienia</word></lang><versions><version long="10000" human="1.0.0"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * Install Code
+ */
+class ips_plugins_setup_install
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version><version long="10001" human="1.0.1"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * 1.0.1 Upgrade Code
+ */
+class ips_plugins_setup_upg_10001
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version><version long="10002" human="1.0.2"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * 1.0.2 Upgrade Code
+ */
+class ips_plugins_setup_upg_10002
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version><version long="10003" human="1.0.3"><![CDATA[//<?php
+
+
+/* To prevent PHP errors (extending class does not exist) revealing path */
+if ( !\defined( '\IPS\SUITE_UNIQUE_KEY' ) )
+{
+	header( ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' ) . ' 403 Forbidden' );
+	exit;
+}
+
+/**
+ * 1.0.3 Upgrade Code
+ */
+class ips_plugins_setup_upg_10003
+{
+	/**
+	 * ...
+	 *
+	 * @return	array	If returns TRUE, upgrader will proceed to next step. If it returns any other value, it will set this as the value of the 'extra' GET parameter and rerun this step (useful for loops)
+	 */
+	public function step1()
+	{
+		
+
+		return TRUE;
+	}
+	
+	// You can create as many additional methods (step2, step3, etc.) as is necessary.
+	// Each step will be executed in a new HTTP request
+}]]></version></versions></plugin>
